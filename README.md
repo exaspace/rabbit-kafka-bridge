@@ -12,10 +12,10 @@ Run via docker:
 ```
 docker run --rm -it --net host exaspace/rabbit-kafka-bridge:1.0.0 \
     --rabbit_host localhost \
-	--rabbit_queue somequeue \
+    --rabbit_queue somequeue \
     --kafka_host localhost \
     --kafka_port 9092 \
-	--kafka_topic sometopic
+    --kafka_topic sometopic
 ```
 
 Or run natively:
@@ -39,11 +39,13 @@ docker-compose up -d
 Send a message to RabbitMQ:
 
 ```
-docker-compose exec rabbit-kafka-bridge util/rabbit-send.py --host rabbitmq --exchange testexchange --message "Hello" --count 1
+docker-compose exec rabbit-kafka-bridge util/rabbit-send.py \
+    --host rabbitmq --exchange testexchange --message "Hello" --count 1
 ```
 
 You should see the messages arriving in Kafka:
 
 ```
-docker-compose exec kafka kafka-console-consumer.sh  --bootstrap-server localhost:9092 --from-beginning --topic testtopic
+docker-compose exec kafka kafka-console-consumer.sh \
+    --bootstrap-server localhost:9092 --from-beginning --topic testtopic
 ```
