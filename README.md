@@ -1,6 +1,6 @@
 # Rabbit Kafka Bridge
 
-[![Test](https://github.com/exaspace/rabbit-kafka-bridge/actions/workflows/main.yml/badge.svg)](https://github.com/exaspace/rabbit-kafka-bridge/actions/workflows/main.yml)
+[![Test](https://github.com/exaspace/rabbit-kafka-bridge/actions/workflows/test.yml/badge.svg)](https://github.com/exaspace/rabbit-kafka-bridge/actions/workflows/test.yml) [![Publish](https://github.com/exaspace/rabbit-kafka-bridge/actions/workflows/publish.yml/badge.svg)](https://github.com/exaspace/rabbit-kafka-bridge/actions/workflows/publish.yml)
 
 Simple application to forward messages from a RabbitMQ queue to a Kafka topic.
 

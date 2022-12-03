@@ -14,7 +14,6 @@ logger = logging.getLogger()
 
 
 class Rabbit2Kafka(object):
-
     def __init__(self, rabbit_reader, kafka_writer):
         self.rabbit_reader = rabbit_reader
         self.kafka_writer = kafka_writer
@@ -28,7 +27,6 @@ class Rabbit2Kafka(object):
 
 
 class RabbitReader(object):
-
     def __init__(self, host, queue_name):
         self.host = host
         self.queue_name = queue_name
@@ -37,7 +35,9 @@ class RabbitReader(object):
         while True:
             try:
                 self._start()
-                self.channel.basic_consume(on_message_callback=callback, queue=self.queue_name, auto_ack=True)
+                self.channel.basic_consume(
+                    on_message_callback=callback, queue=self.queue_name, auto_ack=True
+                )
                 logger.info("Starting Rabbit consumption")
                 self.channel.start_consuming()
             except pika.exceptions.AMQPConnectionError:
@@ -52,7 +52,6 @@ class RabbitReader(object):
 
 
 class KafkaWriter(object):
-
     def __init__(self, hosts, topic_name):
         self.hosts = hosts
         self.topic_name = topic_name
@@ -62,7 +61,7 @@ class KafkaWriter(object):
     def _connect(self):
         try:
             logger.info("Connecting to Kafka hosts={}".format(self.hosts))
-            self.producer = Producer({'bootstrap.servers': self.hosts})
+            self.producer = Producer({"bootstrap.servers": self.hosts})
         except:
             logger.exception("Could not connect to Kafka hosts={}".format(self.hosts))
 
@@ -82,17 +81,21 @@ class KafkaWriter(object):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--rabbit_host', type=str, default='localhost')
-    parser.add_argument('--rabbit_queue', type=str)
-    parser.add_argument('--kafka_host', type=str, default='localhost')
-    parser.add_argument('--kafka_port', type=int, default=9092)
-    parser.add_argument('--kafka_topic', type=str)
+    parser.add_argument("--rabbit_host", type=str, default="localhost")
+    parser.add_argument("--rabbit_queue", type=str)
+    parser.add_argument("--kafka_host", type=str, default="localhost")
+    parser.add_argument("--kafka_port", type=int, default=9092)
+    parser.add_argument("--kafka_topic", type=str)
 
     args = parser.parse_args()
     if not args.rabbit_queue or not args.kafka_topic:
         parser.print_help()
     else:
         logging.config.fileConfig("logging.conf")
-        rabbit_reader = RabbitReader(host=args.rabbit_host, queue_name=args.rabbit_queue)
-        kafka_writer = KafkaWriter("{}:{}".format(args.kafka_host, args.kafka_port), args.kafka_topic)
+        rabbit_reader = RabbitReader(
+            host=args.rabbit_host, queue_name=args.rabbit_queue
+        )
+        kafka_writer = KafkaWriter(
+            "{}:{}".format(args.kafka_host, args.kafka_port), args.kafka_topic
+        )
         Rabbit2Kafka(rabbit_reader, kafka_writer).run()
