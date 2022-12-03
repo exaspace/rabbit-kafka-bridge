@@ -30,4 +30,6 @@ jobs:
       - name: "Integration Test"
         run: |
           docker compose up -d
+          sleep 10
           docker compose exec  -e KAFKA_HOST=kafka -e RABBIT_HOST=rabbitmq rabbit-kafka-bridge make test
+          docker compose down -v

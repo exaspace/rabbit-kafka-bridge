@@ -1,0 +1,35 @@
+name: Docker publish
+on:
+  workflow_dispatch:
+    # allow manual triggering
+
+  schedule:
+    # trigger every Sunday
+    - cron:  '* * * * 0'    
+  
+  push:
+    # trigger when a tag is pushed
+    tags:
+      - '*'
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: "Check out code"
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Checkout latest release tag
+        run: |
+          LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+          git checkout $LATEST_TAG
+
+      - name: "make version"
+        run: make version
+
+      - name: "make push"
+        run: make push
+        env: 
+          DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
