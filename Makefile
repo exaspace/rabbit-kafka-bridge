@@ -7,16 +7,43 @@ REGISTRY=  exaspace
 IMAGE    = rabbit-kafka-bridge
 VERSION  = $(shell git describe --tags || git rev-parse head)
 
-DOCKER=$(shell docker info >/dev/null 2>&1 && echo "docker" || echo "sudo docker")
+ifdef NO_CACHE
+	CACHE_ARGS := --no-cache --pull
+else
+	CACHE_ARGS =
+endif
 
-all: latest
+check-env:
+ifndef DOCKER_HUB_TOKEN
+	$(error DOCKER_HUB_TOKEN is undefined)
+endif
+
+all: build
+
+test: 
+	docker compose up -d
+	cd integration-test; pytest -s .
+	docker compose down
 
 build:
-	$(DOCKER) build $(build_opts) -t $(REGISTRY)/$(IMAGE):$(VERSION) ./
+	docker buildx build --platform=linux/amd64 $(CACHE_ARGS) --build-arg IMAGE_VERSION=$(VERSION) \
+		-t $(REGISTRY)/$(IMAGE):$(VERSION) ./
 
 latest: build
-	$(DOCKER) tag $(REGISTRY)/$(IMAGE):$(VERSION) $(REGISTRY)/$(IMAGE):latest
+	docker tag $(REGISTRY)/$(IMAGE):$(VERSION) $(REGISTRY)/$(IMAGE):latest
 
-push:
-	$(DOCKER) push $(REGISTRY)/$(IMAGE):$(VERSION)
-	$(DOCKER) push $(REGISTRY)/$(IMAGE):latest
+login: check-env
+	# WARNING ensure below line does not display output
+	@echo $(DOCKER_HUB_TOKEN) | docker login --username exaspace --password-stdin
+
+push: latest login
+	docker push $(REGISTRY)/$(IMAGE):$(VERSION)
+	docker push $(REGISTRY)/$(IMAGE):latest
+
+list:
+	curl -L -s 'https://registry.hub.docker.com/v2/repositories/$(REGISTRY)/$(IMAGE)/tags?page_size=128'|\
+		jq '."results"[]["name"]'
+
+version:
+	@echo $(VERSION)
+
