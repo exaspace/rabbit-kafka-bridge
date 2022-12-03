@@ -1,3 +1,4 @@
+import os
 import time
 import logging
 import logging.config
@@ -9,11 +10,11 @@ from confluent_kafka import Consumer, TopicPartition
 from confluent_kafka.admin import AdminClient, NewTopic
 
 
-RABBIT_HOST = 'localhost'
+RABBIT_HOST = os.getenv('RABBIT_HOST', 'localhost')
 EXCHANGE = 'testexchange'
 ROUTING_KEY = ''
 
-KAFKA_HOST = 'localhost:9092'
+KAFKA_HOST = f"{os.getenv('KAFKA_HOST', 'localhost')}:9092"
 KAFKA_TOPIC = 'testtopic'
 
 logging.config.fileConfig("../logging.conf")
@@ -72,6 +73,7 @@ def test_send_receive():
 
     rabbit_message = f"Hello {uuid.uuid4().hex}"
     rabbit_send(RABBIT_HOST, EXCHANGE, [rabbit_message])
+    time.sleep(2) # should be more than enough time for message to be forwarded
     kafka_msg = kafka_consume_last_message(KAFKA_HOST, KAFKA_TOPIC, partition=0)
 
     assert kafka_msg == rabbit_message

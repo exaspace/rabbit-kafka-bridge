@@ -21,9 +21,7 @@ endif
 all: build
 
 test: 
-	docker compose up -d
 	cd integration-test; pytest -s .
-	docker compose down
 
 build:
 	docker buildx build --platform=linux/amd64 $(CACHE_ARGS) --build-arg IMAGE_VERSION=$(VERSION) \

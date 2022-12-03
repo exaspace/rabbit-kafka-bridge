@@ -1,5 +1,7 @@
 # Rabbit Kafka Bridge
 
+[![Test](https://github.com/exaspace/rabbit-kafka-bridge/actions/workflows/main.yml/badge.svg)](https://github.com/exaspace/rabbit-kafka-bridge/actions/workflows/main.yml)
+
 Simple application to forward messages from a RabbitMQ queue to a Kafka topic.
 
 * Written in Python3
@@ -23,30 +25,30 @@ Or run natively:
 
 ```
 pip3 install -r requirements.txt
-./rabbit-kafka-bridge.py3
+./rabbit-kafka-bridge.py
 ```
 
 To see all options use `--help`
 
 
-### Quick demo using docker-compose
+### Quick demo using docker compose
 
 The docker compose file will build the application docker image locally and start RabbitMQ and Kafka (RabbitMQ is configured to start with a queue called 'testqueue' which is bound to an exchange called 'testexchange').
 
 ```
-docker-compose up -d
+docker compose up -d
 ```
 
 Send a message to RabbitMQ (to exchange 'testexchange'):
 
 ```
-docker-compose exec rabbit-kafka-bridge util/rabbit-send.py \
+docker compose exec rabbit-kafka-bridge util/rabbit-send.py \
     --host rabbitmq --exchange testexchange --message "Hello" --count 1
 ```
 
-You should see the messages arriving in Kafka (on topic 'testtopic'):
+You should see the messages arriving in Kafka on topic 'testtopic' (NB this command is quite slow):
 
 ```
-docker-compose exec kafka kafka-console-consumer.sh \
+docker compose exec kafka kafka-console-consumer.sh \
     --bootstrap-server localhost:9092 --from-beginning --topic testtopic
 ```

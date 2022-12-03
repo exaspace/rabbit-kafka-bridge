@@ -2,8 +2,8 @@ FROM exaspace/python3-rdkafka:1.1.0
 
 WORKDIR /app
 
-ADD . /app/
+COPY . /app/
 
-RUN pip3 install -r requirements.txt
+RUN pip install -r requirements.txt
 
-ENTRYPOINT ["./rabbit-kafka-bridge.py3"]
+ENTRYPOINT ["./rabbit-kafka-bridge.py"]

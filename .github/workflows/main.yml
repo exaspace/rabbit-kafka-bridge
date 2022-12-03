@@ -19,7 +19,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: "Test"
+      - name: "Build docker image"
         run: |
-          pip install -r requirements.txt
-          make test
+          docker compose build --no-cache
+
+      - name: "Pull docker images for test dependencies"
+        run: |
+          docker compose pull rabbitmq kafka
+
+      - name: "Integration Test"
+        run: |
+          docker compose up -d
+          docker compose exec  -e KAFKA_HOST=kafka -e RABBIT_HOST=rabbitmq rabbit-kafka-bridge make test
