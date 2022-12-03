@@ -5,7 +5,7 @@
 
 REGISTRY=  exaspace
 IMAGE    = rabbit-kafka-bridge
-VERSION  = $(shell git describe || git rev-parse head)
+VERSION  = $(shell git describe --tags || git rev-parse head)
 
 DOCKER=$(shell docker info >/dev/null 2>&1 && echo "docker" || echo "sudo docker")
 

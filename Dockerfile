@@ -1,4 +1,4 @@
-FROM exaspace/python3-rdkafka:1.0.0-0
+FROM exaspace/python3-rdkafka:1.1.0
 
 WORKDIR /app
 
